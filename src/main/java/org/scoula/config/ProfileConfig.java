@@ -12,22 +12,29 @@ public class ProfileConfig {
     
     @Configuration
     @Profile("dev")
-    @PropertySource("classpath:config-repo/enviroments/application-dev.properties")
+    @PropertySource("classpath:config/enviroments/application-dev.properties")
     public static class DevConfig {
         // 개발환경 전용 Bean 설정
     }
     
     @Configuration
     @Profile("prod")
-    @PropertySource("classpath:config-repo/enviroments/application-prod.properties")
+    @PropertySource("classpath:config/enviroments/application-prod.properties")
     public static class ProdConfig {
         // 운영환경 전용 Bean 설정
     }
 
     @Configuration
     @Profile("test")
-    @PropertySource("classpath:config-repo/enviroments/application-test.properties")
+    @PropertySource("classpath:config/enviroments/application-test.properties")
     public static class TestConfig {
-        // 운영환경 전용 Bean 설정
+        // 테스트
+    }
+
+    @Configuration
+    @Profile("test22")
+    @PropertySource("classpath:config/enviroments/application-test22.properties")
+    public static class Test22Config {
+        // 테스트22
     }
 }
