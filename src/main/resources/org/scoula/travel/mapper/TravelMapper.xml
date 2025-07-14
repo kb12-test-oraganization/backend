@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.scoula.travel.mapper.TravelMapper">
+
+    <!-- 공통 SQL 문장 정의 -->
+    <sql id="travel-select">
+        SELECT t.*, ti.no AS tino, ti.filename, ti.travel_no
+        FROM tbl_travel t
+                 LEFT OUTER JOIN tbl_travel_image ti
+                                 ON t.no = ti.travel_no
+    </sql>
+
+
+    <!-- 전체 여행지 수 조회 -->
+    <select id="getTotalCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM tbl_travel
+    </select>
+
+    <!-- 권역 목록 조회 -->
+    <select id="getDistricts" resultType="java.lang.String">
+        SELECT DISTINCT(district)
+        FROM tbl_travel
+        ORDER BY district
+    </select>
+
+    <!-- 전체 여행지 목록 조회 -->
+    <select id="getTravels" resultMap="travelMap">
+        <include refid="travel-select"/>
+        ORDER BY district, title
+    </select>
+
+    <!-- 페이징 처리된 여행지 목록 조회-->
+    <select id="getPage" resultMap="travelMap">
+        SELECT *
+        FROM tbl_travel
+        ORDER BY district, title
+        LIMIT #{offset}, #{amount}
+    </select>
+
+    <!-- 권역별 여행지 정보 조회 -->
+    <select id="getTravelsByDistrict" resultMap="travelMap">
+        <include refid="travel-select"/>
+        WHERE district = #{district}
+        ORDER BY district
+    </select>
+
+    <!-- 특정 여행지 상세 조회 -->
+    <select id="getTravel" resultMap="travelMap">
+        <include refid="travel-select"/>
+        WHERE t.no = #{no}
+    </select>
+
+    <!-- 특정 여행지 이미지 목록 조회 -->
+    <select id="getImages" resultType="org.scoula.travel.domain.TravelImageVO">
+        SELECT *
+        FROM tbl_travel_image
+        WHERE travel_no = #{travelNo}
+    </select>
+
+
+    <!-- 특정 이미지 정보 -->
+    <select id="getImage" resultType="org.scoula.travel.domain.TravelImageVO">
+        SELECT *
+        FROM tbl_travel_image
+        WHERE no = #{no}
+    </select>
+
+
+    <!-- ResultMap 설정 -->
+    <!-- 이미지 정보 매핑 -->
+    <resultMap id="imagesMap" type="org.scoula.travel.domain.TravelImageVO">
+        <id column="tino" property="no"/>
+        <result column="filename" property="filename"/>
+        <result column="travel_no" property="travelNo"/>
+    </resultMap>
+
+    <!-- 여행지 정보 매핑 -->
+    <resultMap id="travelMap" type="org.scoula.travel.domain.TravelVO">
+        <id column="no" property="no"/>
+        <result column="district" property="district"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <collection property="images" resultMap="imagesMap"/>
+    </resultMap>
+
+</mapper>
